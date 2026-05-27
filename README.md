@@ -4,14 +4,14 @@ A local test environment that simulates how ZScaler intercepts outbound package 
 
 The proxy intercepts HTTPS requests to public registries (PyPI, npm, Maven Central), rewrites them to `libraries.cgr.dev`, and injects Chainguard pull-token credentials — all transparently, without any package manager configuration on the client side. This matches how ZScaler auth-injection works in practice.
 
-All container images come from `cgr.dev/smalls.xyz/`.
+All container images come from `cgr.dev/<YOUR_ORG>/`.
 
 ---
 
 ## Prerequisites
 
 - Docker with Compose v2
-- [`chainctl`](https://edu.chainguard.dev/chainguard/chainctl-docs/) authenticated to the `smalls.xyz` org
+- [`chainctl`](https://edu.chainguard.dev/chainguard/chainctl-docs/) authenticated to the `<YOUR_ORG>` org
 - [`cosign`](https://github.com/sigstore/cosign) **≤ 3.0.5** (3.0.6+ breaks `chainctl libraries verify` due to a SLSA v1 predicate type mismatch)
 
 Authenticate Docker for `cgr.dev` image pulls:
@@ -28,9 +28,9 @@ Generate per-ecosystem pull tokens and populate `.env`:
 ```sh
 cp .env.example .env
 
-chainctl auth pull-token create --parent smalls.xyz --repository python      -o json
-chainctl auth pull-token create --parent smalls.xyz --repository javascript  -o json
-chainctl auth pull-token create --parent smalls.xyz --repository java        -o json
+chainctl auth pull-token create --parent <YOUR_ORG> --repository python      -o json
+chainctl auth pull-token create --parent <YOUR_ORG> --repository javascript  -o json
+chainctl auth pull-token create --parent <YOUR_ORG> --repository java        -o json
 ```
 
 Paste the `username` and `password` fields from each into `.env`.
@@ -117,15 +117,15 @@ Clients have **no** proxy configuration at all. iptables OUTPUT rules in the pro
 
 ```
 proxy/
-  Dockerfile                  cgr.dev/smalls.xyz/python:latest-dev + iptables + mitmproxy
+  Dockerfile                  cgr.dev/<YOUR_ORG>/python:latest-dev + iptables + mitmproxy
   redirect.py                 mitmproxy addon — host rewrite, path prefix, Basic auth injection
   entrypoint.sh               explicit proxy startup
   entrypoint-transparent.sh   iptables OUTPUT rules + mitmproxy in transparent mode as nonroot
 
 clients/
-  python/   cgr.dev/smalls.xyz/python:latest-dev — pip install test
-  node/     cgr.dev/smalls.xyz/node:latest-dev   — npm install test + chainctl verify
-  java/     cgr.dev/smalls.xyz/maven:latest       — mvn dependency:resolve test
+  python/   cgr.dev/<YOUR_ORG>/python:latest-dev — pip install test
+  node/     cgr.dev/<YOUR_ORG>/node:latest-dev   — npm install test + chainctl verify
+  java/     cgr.dev/<YOUR_ORG>/maven:latest       — mvn dependency:resolve test
 
 docker-compose.yml              explicit proxy (HTTPS_PROXY env var)
 docker-compose.transparent.yml  transparent proxy (iptables, network_mode: service:proxy)

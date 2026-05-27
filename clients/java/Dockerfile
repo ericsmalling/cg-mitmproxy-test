@@ -1,4 +1,4 @@
-FROM cgr.dev/smalls.xyz/maven:latest
+FROM cgr.dev/<YOUR_ORG>/maven:latest
 USER root
 WORKDIR /app
 COPY pom.xml /app/pom.xml

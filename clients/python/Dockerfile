@@ -1,4 +1,4 @@
-FROM cgr.dev/smalls.xyz/python:latest-dev
+FROM cgr.dev/<YOUR_ORG>/python:latest-dev
 USER root
 WORKDIR /app
 COPY test-install.sh /app/test-install.sh

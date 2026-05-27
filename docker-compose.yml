@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  proxy:
+    build: ./proxy
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - certs:/certs
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test -f /certs/mitmproxy-ca.pem"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  python-client:
+    build: ./clients/python
+    profiles: ["test"]
+    depends_on:
+      proxy:
+        condition: service_healthy
+    volumes:
+      - certs:/certs:ro
+    environment:
+      - HTTPS_PROXY=http://proxy:8080
+      - SSL_CERT_FILE=/certs/mitmproxy-ca.pem
+      - REQUESTS_CA_BUNDLE=/certs/mitmproxy-ca.pem
+
+  node-client:
+    build: ./clients/node
+    profiles: ["test"]
+    depends_on:
+      proxy:
+        condition: service_healthy
+    volumes:
+      - certs:/certs:ro
+      - ./cache/npm:/root/.npm
+    environment:
+      - HTTPS_PROXY=http://proxy:8080
+      - NODE_EXTRA_CA_CERTS=/certs/mitmproxy-ca.pem
+
+  java-client:
+    build: ./clients/java
+    profiles: ["test"]
+    depends_on:
+      proxy:
+        condition: service_healthy
+    volumes:
+      - certs:/certs:ro
+    environment:
+      - HTTPS_PROXY=http://proxy:8080
+
+volumes:
+  certs:

@@ -91,10 +91,20 @@ open http://localhost:8081
 
 ### Transparent proxy mode (Phase 2)
 
-Clients have **no** proxy configuration at all. iptables OUTPUT rules in the proxy container intercept outbound port 443/80 traffic from the shared network namespace. Matches real ZScaler behaviour.
+Uses `docker-compose.transparent.yml`. Clients have **no** proxy configuration at all — they share the proxy container's network namespace (`network_mode: service:proxy`) and iptables OUTPUT rules intercept their outbound port 443/80 traffic. Matches real ZScaler behaviour.
 
 ```sh
+# Start the transparent proxy (separate compose file)
+docker compose -f docker-compose.transparent.yml up -d
+
+# Run the node test (passes --transparent so test-node.sh selects the right compose file)
 ./test-node.sh --transparent
+
+# Watch proxy traffic
+docker compose -f docker-compose.transparent.yml logs -f proxy
+
+# Tear down
+docker compose -f docker-compose.transparent.yml down
 ```
 
 ### `test-node.sh` does:

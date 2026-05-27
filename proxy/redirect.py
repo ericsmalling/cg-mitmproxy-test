@@ -42,6 +42,7 @@ def request(flow: http.HTTPFlow) -> None:
 
     entry = REDIRECT_MAP.get(host)
     if entry is None:
+        log.info(f"Passthrough: {host}{flow.request.path}")
         return
 
     path_prefix, user_key, pass_key = entry

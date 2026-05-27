@@ -1,4 +1,4 @@
-FROM cgr.dev/<YOUR_ORG>/python:latest-dev
+FROM cgr.dev/smalls.xyz/python:latest-dev
 USER root
 RUN apk add --no-cache iptables && pip install --no-cache-dir mitmproxy
 COPY redirect.py /app/redirect.py

@@ -9,8 +9,10 @@ until [ -f /certs/mitmproxy-ca.pem ]; do
     sleep 1
 done
 
-# NODE_EXTRA_CA_CERTS=/certs/mitmproxy-ca.pem is set by docker compose
-# HTTPS_PROXY is set by docker compose
+# Trust the mitmproxy CA in the system bundle (needed for Node.js v22+ where
+# NODE_EXTRA_CA_CERTS alone is insufficient; also covers older versions)
+cat /certs/mitmproxy-ca.pem >> /etc/ssl/certs/ca-certificates.crt
+
 npm install --prefer-online lodash
 
 echo "Node test passed"

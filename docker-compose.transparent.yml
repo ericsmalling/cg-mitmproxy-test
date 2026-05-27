@@ -1,5 +1,3 @@
-version: "3.8"
-
 # Transparent proxy mode: clients share the proxy's network namespace via
 # network_mode: "service:proxy". iptables OUTPUT rules intercept their outbound
 # traffic without any HTTPS_PROXY env var on the client side.

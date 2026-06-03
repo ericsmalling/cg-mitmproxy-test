@@ -6,6 +6,7 @@ The proxy intercepts HTTPS requests to public registries (PyPI, npm, Maven Centr
 
 All container images come from `cgr.dev/<YOUR_ORG>/`.
 
+## Note: This is not a vetted solution, it's simply an experiment.  Do not consider this as explicitly or implicitly supported by me or my employer and please do not deploy it in your infrastructure without reviewing it first. 
 ---
 
 ## Prerequisites
